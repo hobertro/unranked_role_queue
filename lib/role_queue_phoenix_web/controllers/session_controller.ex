@@ -5,8 +5,8 @@ defmodule RoleQueuePhoenixWeb.SessionController do
     render(conn, "new.html")
   end
 
-  def create(conn, %{"player" => %{"name" => name, "color" => color}}) do
-    player = RoleQueuePhoenix.Player.new(name, color)
+  def create(conn, %{"player" => %{"name" => name}}) do
+    player = RoleQueuePhoenix.Player.new(name)
 
     conn
     |> put_session(:current_player, player)

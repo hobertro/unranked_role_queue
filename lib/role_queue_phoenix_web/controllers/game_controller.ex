@@ -10,20 +10,17 @@ defmodule RoleQueuePhoenixWeb.GameController do
     render(conn, "new.html")
   end
 
-  # def create(conn, %{"game" => %{"size" => size}}) do
-  #   game_name = BingoHall.HaikuName.generate()
-  #   size = String.to_integer(size)
+  def create(conn, %{"game" => %{"name" => name}}) do
+    case RoleQueuePhoenix.GameSupervisor.start_game(name) do
+      {:ok, _game_pid} ->
+        redirect(conn, to: Routes.game_path(conn, :show, name))
 
-  #   case GameSupervisor.start_game(game_name, size) do
-  #     {:ok, _game_pid} ->
-  #       redirect(conn, to: game_path(conn, :show, game_name))
-
-  #     {:error, _error} ->
-  #       conn
-  #       |> put_flash(:error, "Unable to start game!")
-  #       |> redirect(to: game_path(conn, :new))
-  #   end
-  # end
+      {:error, _error} ->
+        conn
+        |> put_flash(:error, "Unable to start game!")
+        |> redirect(to: Routes.game_path(conn, :new))
+    end
+  end
 
   # def show(conn, %{"id" => game_name}) do
   #   case GameServer.game_pid(game_name) do
