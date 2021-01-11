@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="col-xs-8 col-xs-offset-2 text-center">
+    <h1>Welcome!</h1>
+    <h4>First up, we need your name:</h4>
+    <%= form_for @conn, Routes.session_path(@conn, :create), [as: :player], fn f -> %>
+      <div class="form-group">
+        <%= text_input f, :name,
+                          placeholder: "Name",
+                          autofocus: true,
+                          required: true %>
+      </div>
+      <%= submit "Enter Role Queue!", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>
