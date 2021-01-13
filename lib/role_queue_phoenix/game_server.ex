@@ -16,7 +16,7 @@ defmodule RoleQueuePhoenix.GameServer do
   """
   def start_link(game_name) do
     GenServer.start_link(__MODULE__,
-                         game_name,
+                         {game_name},
                          name: via_tuple(game_name))
   end
 
@@ -57,7 +57,7 @@ defmodule RoleQueuePhoenix.GameServer do
     #   [{^game_name, game}] ->
     #     game
     # end
-    game = RoleQueuePhoenix.Game.new
+    game = RoleQueuePhoenix.Game.new(game_name)
 
     Logger.info("Spawned game server process named '#{game_name}'.")
 

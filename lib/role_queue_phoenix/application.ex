@@ -8,10 +8,12 @@ defmodule RoleQueuePhoenix.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Registry, keys: :unique, name: RoleQueuePhoenix.GameRegistry},
       # Start the Ecto repository
       RoleQueuePhoenix.Repo,
       # Start the endpoint when the application starts
-      RoleQueuePhoenixWeb.Endpoint
+      RoleQueuePhoenixWeb.Endpoint,
+      RoleQueuePhoenix.GameSupervisor
       # Starts a worker by calling: RoleQueuePhoenix.Worker.start_link(arg)
       # {RoleQueuePhoenix.Worker, arg},
     ]

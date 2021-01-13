@@ -1,7 +1,7 @@
 defmodule RoleQueuePhoenix.Game do
 
-  @enforce_keys [:squares]
-  defstruct squares: nil, scores: %{}, winner: nil
+  # @enforce_keys [:squares]
+  defstruct name: nil
 
   # alias Bingo.{Buzzwords, Game, Square, BingoChecker}
 
@@ -12,7 +12,7 @@ defmodule RoleQueuePhoenix.Game do
   """
   def new(name) do
     # buzzwords = Buzzwords.read_buzzwords()
-    Game.new(name)
+    %RoleQueuePhoenix.Game{name: name}
   end
 
   @doc """

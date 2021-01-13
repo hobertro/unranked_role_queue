@@ -5,7 +5,7 @@ defmodule RoleQueuePhoenixWeb.GameController do
 
   # alias RoleQueuePhoenixWeb.{GameServer, GameSupervisor}
 
-  @spec new(Plug.Conn.t(), any) :: Plug.Conn.t()
+  # @spec new(Plug.Conn.t(), any) :: Plug.Conn.t()
   def new(conn, _) do
     render(conn, "new.html")
   end
@@ -22,20 +22,20 @@ defmodule RoleQueuePhoenixWeb.GameController do
     end
   end
 
-  # def show(conn, %{"id" => game_name}) do
-  #   case GameServer.game_pid(game_name) do
-  #     pid when is_pid(pid) ->
-  #       conn
-  #       |> assign(:game_name, game_name)
-  #       |> assign(:auth_token, generate_auth_token(conn))
-  #       |> render("show.html")
+  def show(conn, %{"id" => game_name}) do
+    case RoleQueuePhoenix.GameServer.game_pid(game_name) do
+      pid when is_pid(pid) ->
+        conn
+        |> assign(:game_name, game_name)
+        |> assign(:auth_token, generate_auth_token(conn))
+        |> render("show.html")
 
-  #     nil ->
-  #       conn
-  #       |> put_flash(:error, "Game not found!")
-  #       |> redirect(to: game_path(conn, :new))
-  #   end
-  # end
+      nil ->
+        conn
+        |> put_flash(:error, "Game not found!")
+        |> redirect(to: Routes.game_path(conn, :new))
+    end
+  end
 
   defp require_player(conn, _opts) do
     if get_session(conn, :current_player) do
@@ -48,8 +48,8 @@ defmodule RoleQueuePhoenixWeb.GameController do
     end
   end
 
-  # defp generate_auth_token(conn) do
-  #   current_player = get_session(conn, :current_player)
-  #   Phoenix.Token.sign(conn, "player auth", current_player)
-  # end
+  defp generate_auth_token(conn) do
+    current_player = get_session(conn, :current_player)
+    Phoenix.Token.sign(conn, "player auth", current_player)
+  end
 end
