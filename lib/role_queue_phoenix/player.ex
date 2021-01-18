@@ -1,7 +1,7 @@
 defmodule RoleQueuePhoenix.Player do
 
   @enforce_keys [:name]
-  defstruct [:name]
+  defstruct [:name, role: "Undecided", id: nil]
 
   @doc """
   Creates a player with the given `name`.

@@ -1,33 +1,26 @@
 defmodule RoleQueuePhoenix.Game do
 
   # @enforce_keys [:squares]
-  defstruct name: nil
+  defstruct name: nil, players: [], roles: []
 
-  # alias Bingo.{Buzzwords, Game, Square, BingoChecker}
+  alias RoleQueuePhoenix.Game
 
   @doc """
-  Creates a game with a `size` x `size` collection of squares
-  taken randomly from the given list of `buzzwords` where
-  each buzzword is of the form `%{phrase: "Upsell", points: 10}`.
+  Creates a game with a players and roles setup.
   """
   def new(name) do
-    # buzzwords = Buzzwords.read_buzzwords()
-    %RoleQueuePhoenix.Game{name: name}
+    %Game{name: name, players: [], roles: setup_roles()}
   end
 
-  @doc """
-  Creates a game with a `size` x `size` collection of squares
-  taken randomly from the given list of `buzzwords` where
-  each buzzword is of the form `%{phrase: "Upsell", points: 10}`.
-  """
-  # def new(buzzwords, size) do
-  #   squares =
-  #     buzzwords
-  #     |> Enum.shuffle()
-  #     |> Enum.take(size * size)
-  #     |> Enum.map(&Square.from_buzzword(&1))
-  #     |> Enum.chunk_every(size)
-
-  #   %Game{squares: squares}
-  # end
+  def setup_roles do
+    roles  = ["Carry", "Mid", "Offlane", "(Offlane) Support", "(Hard) Support"]
+    Enum.with_index(roles)
+     |> Enum.map(fn({role_name, index}) ->
+      %RoleQueuePhoenix.Role{
+        name: role_name,
+        position: index + 1,
+        reserved: false
+      }
+    end)
+  end
 end
