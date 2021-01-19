@@ -20,13 +20,13 @@ defmodule RoleQueuePhoenix.GameServer do
                          name: via_tuple(game_name))
   end
 
-  # def summary(game_name) do
-  #   GenServer.call(via_tuple(game_name), :summary)
-  # end
+  def summary(game_name) do
+    GenServer.call(via_tuple(game_name), :summary)
+  end
 
-  # def mark(game_name, phrase, player) do
-  #   GenServer.call(via_tuple(game_name), {:mark, phrase, player})
-  # end
+  def assign_role(game_name, role, player) do
+    GenServer.call(via_tuple(game_name), {:assign_role, role, player})
+  end
 
   # @doc """
   # Returns a tuple used to register and lookup a game server process by name.
@@ -50,7 +50,7 @@ defmodule RoleQueuePhoenix.GameServer do
   def init({game_name}) do
     # case :ets.lookup(:games_table, game_name) do
     #   [] ->
-    #     game = RoleQueuePhoenix.Game.new
+    #     game = RoleQueuePhoenix.Game.new(game_name)
     #     :ets.insert(:games_table, {game_name, game})
     #     game
 
@@ -64,38 +64,38 @@ defmodule RoleQueuePhoenix.GameServer do
     {:ok, game, @timeout}
   end
 
-  # def handle_call(:summary, _from, game) do
-  #   {:reply, summarize(game), game, @timeout}
-  # end
+  def handle_call(:summary, _from, game) do
+    {:reply, summarize(game), game, @timeout}
+  end
 
-  # def handle_call({:mark, phrase, player}, _from, game) do
-  #   new_game = RoleQueuePhoenix.Game.mark(game, phrase, player)
+  def handle_call({:assign_role, role, player}, _from, game) do
+    new_game = RoleQueuePhoenix.Game.assign_role(game, role, player)
 
-  #   :ets.insert(:games_table, {my_game_name(), new_game})
+    # :ets.insert(:games_table, {my_game_name(), new_game})
 
-  #   {:reply, summarize(new_game), new_game, @timeout}
-  # end
+    {:reply, summarize(new_game), new_game, @timeout}
+  end
 
-  # def summarize(game) do
-  #   %{
-  #     squares: game.squares,
-  #     scores: game.scores,
-  #     winner: game.winner
-  #   }
-  # end
+  def summarize(game) do
+    %{
+      roles: game.roles,
+      players: game.players,
+      game_name: game.name
+    }
+  end
 
-  # def handle_info(:timeout, game) do
-  #   {:stop, {:shutdown, :timeout}, game}
-  # end
+  def handle_info(:timeout, game) do
+    {:stop, {:shutdown, :timeout}, game}
+  end
 
-  # def terminate({:shutdown, :timeout}, _game) do
-  #   :ets.delete(:games_table, my_game_name())
-  #   :ok
-  # end
+  def terminate({:shutdown, :timeout}, _game) do
+    # :ets.delete(:games_table, my_game_name())
+    :ok
+  end
 
-  # def terminate(_reason, _game) do
-  #   :ok
-  # end
+  def terminate(_reason, _game) do
+    :ok
+  end
 
   # defp my_game_name do
   #   Registry.keys(RoleQueuePhoenix.GameRegistry, self()) |> List.first

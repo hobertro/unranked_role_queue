@@ -2,7 +2,7 @@ defmodule RoleQueuePhoenixWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", RoleQueuePhoenixWeb.RoomChannel
+  channel "games:*", RoleQueuePhoenixWeb.GameChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -15,8 +15,19 @@ defmodule RoleQueuePhoenixWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+
+  # Verify the token which should return the player, and then
+  # assign that player to the socket. This allows us to reference
+  # the player in the callback functions of the channel module.
+  #
+  # max_age: 86400 is equivalent to one day in seconds
+  def connect(%{"token" => token}, socket) do
+    case Phoenix.Token.verify(socket, "player auth", token, max_age: 86400) do
+      {:ok, player} ->
+        {:ok, assign(socket, :current_player, player)}
+      {:error, _reason} ->
+        :error
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

@@ -10,13 +10,15 @@ defmodule RoleQueuePhoenix.Application do
     children = [
       {Registry, keys: :unique, name: RoleQueuePhoenix.GameRegistry},
       # Start the Ecto repository
-      RoleQueuePhoenix.Repo,
+      # RoleQueuePhoenix.Repo,
       # Start the endpoint when the application starts
       RoleQueuePhoenixWeb.Endpoint,
       RoleQueuePhoenix.GameSupervisor
       # Starts a worker by calling: RoleQueuePhoenix.Worker.start_link(arg)
       # {RoleQueuePhoenix.Worker, arg},
     ]
+
+    # :ets.new(:games_table, [:public, :named_table])
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

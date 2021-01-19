@@ -33,7 +33,7 @@ defmodule RoleQueuePhoenix.GameSupervisor do
   Terminates the `GameServer` process normally. It won't be restarted.
   """
   def stop_game(game_name) do
-    :ets.delete(:games_table, game_name)
+    # :ets.delete(:games_table, game_name)
 
     child_pid = GameServer.game_pid(game_name)
     DynamicSupervisor.terminate_child(__MODULE__, child_pid)

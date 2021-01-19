@@ -10,6 +10,7 @@ import css from "../css/app.css"
 // Import dependencies
 //
 import "phoenix_html"
+import "phoenix"
 import React from 'react';
 import ReactDOM from 'react-dom';
 

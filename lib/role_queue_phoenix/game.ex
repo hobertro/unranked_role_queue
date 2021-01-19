@@ -12,6 +12,16 @@ defmodule RoleQueuePhoenix.Game do
     %Game{name: name, players: [], roles: setup_roles()}
   end
 
+  # def update_game(game, player, role) do
+  #   game
+  #    |> assign_role
+  # end
+
+  def assign_role(game, player, role) do
+
+    %{game | players: []}
+  end
+
   def setup_roles do
     roles  = ["Carry", "Mid", "Offlane", "(Offlane) Support", "(Hard) Support"]
     Enum.with_index(roles)

@@ -20,7 +20,7 @@ defmodule RoleQueuePhoenixWeb.SessionController do
   end
 
   defp redirect_back_or_to_new_game(conn) do
-    path = get_session(conn, :return_to) || RoleQueuePhoenixWeb.game_path(conn, :new)
+    path = get_session(conn, :return_to) || Routes.game_path(conn, :new)
 
     conn
     |> put_session(:return_to, nil)
