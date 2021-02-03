@@ -1,6 +1,7 @@
 defmodule RoleQueuePhoenix.Role do
 
   @enforce_keys [:name]
+  @derive {Jason.Encoder, only: [:name, :position, :reserved]}
   defstruct [:name, :position, :reserved]
 
   @doc """

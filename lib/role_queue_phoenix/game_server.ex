@@ -65,7 +65,7 @@ defmodule RoleQueuePhoenix.GameServer do
   end
 
   def handle_call(:summary, _from, game) do
-    {:reply, summarize(game), game, @timeout}
+    {:reply, game, game, @timeout}
   end
 
   def handle_call({:assign_role, role, player}, _from, game) do
@@ -84,18 +84,18 @@ defmodule RoleQueuePhoenix.GameServer do
     }
   end
 
-  def handle_info(:timeout, game) do
-    {:stop, {:shutdown, :timeout}, game}
-  end
+  # def handle_info(:timeout, game) do
+  #   {:stop, {:shutdown, :timeout}, game}
+  # end
 
-  def terminate({:shutdown, :timeout}, _game) do
-    # :ets.delete(:games_table, my_game_name())
-    :ok
-  end
+  # def terminate({:shutdown, :timeout}, _game) do
+  #   :ets.delete(:games_table, my_game_name())
+  #   :ok
+  # end
 
-  def terminate(_reason, _game) do
-    :ok
-  end
+  # def terminate(_reason, _game) do
+  #   :ok
+  # end
 
   # defp my_game_name do
   #   Registry.keys(RoleQueuePhoenix.GameRegistry, self()) |> List.first

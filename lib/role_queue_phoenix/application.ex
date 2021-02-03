@@ -6,6 +6,7 @@ defmodule RoleQueuePhoenix.Application do
   use Application
 
   def start(_type, _args) do
+    import Supervisor.Spec
     # List all child processes to be supervised
     children = [
       {Registry, keys: :unique, name: RoleQueuePhoenix.GameRegistry},
@@ -13,7 +14,8 @@ defmodule RoleQueuePhoenix.Application do
       # RoleQueuePhoenix.Repo,
       # Start the endpoint when the application starts
       RoleQueuePhoenixWeb.Endpoint,
-      RoleQueuePhoenix.GameSupervisor
+      RoleQueuePhoenix.GameSupervisor,
+      supervisor(RoleQueuePhoenixWeb.Presence, [])
       # Starts a worker by calling: RoleQueuePhoenix.Worker.start_link(arg)
       # {RoleQueuePhoenix.Worker, arg},
     ]

@@ -1,5 +1,6 @@
 <div id="root"
   data-game-name="<%= @game_name %>"
   data-auth-token="<%= @auth_token %>"
+  data-user-tag="<%= @user_tag %>"
   data-ws-url="<%= ws_url() %>"
 ></div>

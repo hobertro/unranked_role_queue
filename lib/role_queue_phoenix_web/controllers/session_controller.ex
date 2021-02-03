@@ -6,7 +6,8 @@ defmodule RoleQueuePhoenixWeb.SessionController do
   end
 
   def create(conn, %{"player" => %{"name" => name}}) do
-    player = RoleQueuePhoenix.Player.new(name)
+    user_tag = conn|> get_session(:user_tag)
+    player = RoleQueuePhoenix.Player.new(name, user_tag)
 
     conn
     |> put_session(:current_player, player)

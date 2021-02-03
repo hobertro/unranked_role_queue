@@ -10,7 +10,7 @@ import css from "../css/app.css"
 // Import dependencies
 //
 import "phoenix_html"
-import "phoenix"
+import { Socket } from "phoenix"
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -37,10 +37,36 @@ class Game extends React.Component {
       roles: role_list,
       input: ""
     }
+    
     this.assignRole   = this.assignRole.bind(this);
     this.updateRoles  = this.updateRoles.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount(){
+    this.joinChannel()
+  }
+
+  joinChannel(){
+    const { gameName, authToken, userTag } = document.getElementById('root').dataset
+    const socket = new Socket("/socket", { params: { token: authToken } })
+    socket.connect()
+    this.channel = socket.channel(`games:${gameName}`, {userTag: userTag})
+        
+    this.channel.on("game_summary", summary => {
+      console.log("hihi");  
+      console.log('game summary', summary)
+    })
+
+    this.channel.join()
+      .receive("ok", response => {
+        console.log(`Joined ${gameName} 😊`)  
+      })
+      .receive("error", response => {
+        this.error = `Joining ${gameName} failed 🙁`
+        console.log(this.error, response)
+      })
   }
 
   updateRoles(roles) {

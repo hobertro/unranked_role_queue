@@ -28,6 +28,7 @@ defmodule RoleQueuePhoenixWeb.GameController do
         conn
         |> assign(:game_name, game_name)
         |> assign(:auth_token, generate_auth_token(conn))
+        |> assign(:user_tag, get_session(conn, :user_tag))
         |> render("show.html")
 
       nil ->
