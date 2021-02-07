@@ -54,8 +54,8 @@ class Game extends React.Component {
     socket.connect()
     this.channel = socket.channel(`games:${gameName}`, {userTag: userTag})
         
-    this.channel.on("game_summary", summary => {
-      console.log("hihi");  
+    this.channel.on("game_summary", summary => { 
+      console.log('user tag', userTag);
       console.log('game summary', summary)
     })
 

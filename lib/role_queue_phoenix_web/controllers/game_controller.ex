@@ -15,7 +15,7 @@ defmodule RoleQueuePhoenixWeb.GameController do
       {:ok, _game_pid} ->
         redirect(conn, to: Routes.game_path(conn, :show, name))
 
-      {:error, _error} ->
+      {:error, error} ->
         conn
         |> put_flash(:error, "Unable to start game!")
         |> redirect(to: Routes.game_path(conn, :new))

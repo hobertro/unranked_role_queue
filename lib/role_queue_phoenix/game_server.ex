@@ -28,6 +28,10 @@ defmodule RoleQueuePhoenix.GameServer do
     GenServer.call(via_tuple(game_name), {:assign_role, role, player})
   end
 
+  def add_player(game_name, player_id, player_name) do
+    GenServer.call(via_tuple(game_name), {:add_player, player_id, player_name})
+  end
+
   # @doc """
   # Returns a tuple used to register and lookup a game server process by name.
   # """
@@ -65,6 +69,11 @@ defmodule RoleQueuePhoenix.GameServer do
   end
 
   def handle_call(:summary, _from, game) do
+    {:reply, game, game, @timeout}
+  end
+
+  def handle_call({:add_player, player_id, player_name}, _from, game) do
+    game = RoleQueuePhoenix.Game.add_player(game, player_id, player_name)
     {:reply, game, game, @timeout}
   end
 

@@ -9,7 +9,8 @@ defmodule RoleQueuePhoenix.Game do
   Creates a game with a players and roles setup.
   """
   def new(name) do
-    %Game{name: name, players: [], roles: setup_roles()}
+    roles = setup_roles()
+    %Game{name: name, players: [], roles: roles}
   end
 
   def assign_role(game, player, role) do
@@ -19,7 +20,7 @@ defmodule RoleQueuePhoenix.Game do
   def add_player(%Game{} = game, id, name) do
     case find_player(game.players, id) do
       nil ->
-        %Game{game | players: [Player.new(id, name) | game.players]}
+        %Game{game | players: [Player.new(name, id) | game.players]}
 
       player ->
         # players = replace(game.players, id, fn player -> %Player{ player | name: name} end)

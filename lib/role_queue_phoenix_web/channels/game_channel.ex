@@ -19,9 +19,8 @@ defmodule RoleQueuePhoenixWeb.GameChannel do
 
   @spec handle_info({:after_join, any, any}, Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info({:after_join, game_name, player_id}, socket) do
-    summary     = GameServer.summary(game_name)
     player_name = current_player(socket).name
-    summary     = Game.add_player(summary, player_id, player_name)
+    summary     = GameServer.add_player(game_name, player_id, player_name)
 
     push(socket, "game_summary", summary)
 
