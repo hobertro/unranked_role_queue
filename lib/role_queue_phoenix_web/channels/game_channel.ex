@@ -22,16 +22,8 @@ defmodule RoleQueuePhoenixWeb.GameChannel do
     player_name = current_player(socket).name
     summary     = GameServer.add_player(game_name, player_id, player_name)
 
-    push(socket, "game_summary", summary)
-
-    # push(socket, "presence_state", Presence.list(socket))
-
-    # {:ok, _} =
-    #   Presence.track(socket, current_player(socket).name, %{
-    #     online_at: inspect(System.system_time(:seconds)),
-
-    #   })
-
+    # push(socket, "game_summary", summary)
+    broadcast!(socket, "game_summary", summary)
     {:noreply, socket}
   end
 

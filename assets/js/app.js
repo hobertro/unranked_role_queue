@@ -55,7 +55,11 @@ class Game extends React.Component {
     this.channel = socket.channel(`games:${gameName}`, {userTag: userTag})
         
     this.channel.on("game_summary", summary => { 
-      console.log('user tag', userTag);
+
+    this.setState({
+      roles: [...summary["roles"]],
+      players: [...summary["players"]]
+    });
       console.log('game summary', summary)
     })
 
@@ -79,8 +83,11 @@ class Game extends React.Component {
     let player = this.state.players[index]
     let selected_role = this.findRole(role_name.target.value)[0]
     let current_role  = this.findRole(player.role)[0]
+
     selected_role.reserved = true
-    current_role.reserved  = false
+    if (!(current_role === "Undecided")){
+      current_role.reserved  = false
+    }
     player.role = selected_role.name
     this.setState({
       roles: [...this.state.roles],
@@ -89,6 +96,9 @@ class Game extends React.Component {
   }
 
   findRole(role_name){
+    if (role_name === "Undecided"){
+      return ["Undecided"]
+    }
     return this.state.roles.filter((role) => {
       return role.name === role_name;
     })
@@ -105,18 +115,6 @@ class Game extends React.Component {
       players: [...this.state.players],
       roles: [...this.state.roles]
     })
-  }
-
-  createPlayer(name){
-    let player = { name: name, id: Date.now(), role: "Undecided" }
-    return player;
-  }
-
-  removePlayer(name, players){
-    let player = players.find(player => player.name === name);
-    let player_index = players.indexOf(player);
-    this.state.players.splice(player_index, 1);
-    return player;
   }
 
   assignRandomRoles(){
@@ -181,21 +179,6 @@ class Game extends React.Component {
         <div className="players">
           <h1>Players</h1>
           <PlayerList players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} assignRole={this.assignRole} />
-        </div>
-        <div className="add_player_button">
-          <h1>Add Player</h1>
-          <form onSubmit={this.handleSubmit}>
-            <div className="addPlayer">
-              <div className="add_player_text">
-                <input id="player_name_input"
-                       onChange={this.handleChange}
-                       value={this.state.input} />
-              </div>
-              <button>
-                Add Player
-              </button>
-            </div>
-          </form>
         </div>
 
         <div className="assignRandomRole">
