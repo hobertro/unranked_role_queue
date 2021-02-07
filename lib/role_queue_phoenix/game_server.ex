@@ -77,8 +77,8 @@ defmodule RoleQueuePhoenix.GameServer do
     {:reply, game, game, @timeout}
   end
 
-  def handle_call({:assign_role, role, player}, _from, game) do
-    new_game = RoleQueuePhoenix.Game.assign_role(game, role, player)
+  def handle_call({:assign_role, role, player_id, player_name}, _from, game) do
+    new_game = RoleQueuePhoenix.Game.assign_role(game, role, player_id, player_name)
 
     # :ets.insert(:games_table, {my_game_name(), new_game})
 

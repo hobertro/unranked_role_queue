@@ -55,13 +55,14 @@ class Game extends React.Component {
     this.channel = socket.channel(`games:${gameName}`, {userTag: userTag})
         
     this.channel.on("game_summary", summary => { 
-
-    this.setState({
-      roles: [...summary["roles"]],
-      players: [...summary["players"]]
-    });
-      console.log('game summary', summary)
-    })
+      this.setState({
+        roles: [...summary["roles"]],
+        players: [...summary["players"]]
+      });
+        console.log('game summary', summary)
+      }
+    )
+      
 
     this.channel.join()
       .receive("ok", response => {
@@ -73,7 +74,7 @@ class Game extends React.Component {
       })
   }
 
-  updateRoles(roles) {
+    updateRoles(roles) {
     this.setState({
       roles: roles
     })
@@ -89,6 +90,7 @@ class Game extends React.Component {
       current_role.reserved  = false
     }
     player.role = selected_role.name
+    this.channel.push("assign_role", "hihi")
     this.setState({
       roles: [...this.state.roles],
       players: [...this.state.players]

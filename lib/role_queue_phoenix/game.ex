@@ -13,8 +13,24 @@ defmodule RoleQueuePhoenix.Game do
     %Game{name: name, players: [], roles: roles}
   end
 
-  def assign_role(game, player, role) do
-    %{game | players: []}
+  def assign_role(game, role, player_id, player_name) do
+    # assign player the role
+    # set the role as assigned
+    # %{game | players: []}
+    case find_player(game.players, player_id) do
+      nil ->
+        game
+      player ->
+        new_players = game.players |> Enum.map(&assign_role_to_player(&1, role, player_id))
+        %{game | players: new_players}
+    end
+  end
+
+  def assign_role_to_player(player, role, player_id) do
+    case player.id == player_id do
+      true -> %Player{player | role: role}
+      false -> player
+    end
   end
 
   def add_player(%Game{} = game, id, name) do

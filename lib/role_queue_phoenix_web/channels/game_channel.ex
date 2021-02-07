@@ -27,6 +27,18 @@ defmodule RoleQueuePhoenixWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("assign_role", body, socket) do
+    player_name = current_player(socket).name
+    IO.inspect body
+    # summary     = GameServer.assign_role(game_name, player_id, player_name)
+    # broadcast!(socket, "new_chat_message", %{
+    #   name: current_player(socket).name,
+    #   body: body
+    # })
+
+    {:noreply, socket}
+  end
+
   defp current_player(socket) do
     socket.assigns.current_player
   end
