@@ -45,11 +45,17 @@ class Game extends React.Component {
   }
 
   componentDidMount(){
-    this.joinChannel()
+    const { gameName, authToken, userTag } = document.getElementById('root').dataset
+    this.joinChannel(gameName, authToken, userTag)
+    this.game_name = gameName;
+    this.user_tag  = userTag;
+    this.setState({
+      game_name: gameName,
+      user_tag: userTag
+    })
   }
 
-  joinChannel(){
-    const { gameName, authToken, userTag } = document.getElementById('root').dataset
+  joinChannel(gameName, authToken, userTag){
     const socket = new Socket("/socket", { params: { token: authToken } })
     socket.connect()
     this.channel = socket.channel(`games:${gameName}`, {userTag: userTag})
@@ -60,6 +66,15 @@ class Game extends React.Component {
         players: [...summary["players"]]
       });
         console.log('game summary', summary)
+      }
+    )
+
+    this.channel.on("assign_role", summary => { 
+      this.setState({
+        roles: [...summary["roles"]],
+        players: [...summary["players"]]
+      });
+        console.log('assign role', summary)
       }
     )
       
@@ -74,7 +89,7 @@ class Game extends React.Component {
       })
   }
 
-    updateRoles(roles) {
+  updateRoles(roles) {
     this.setState({
       roles: roles
     })
@@ -90,7 +105,7 @@ class Game extends React.Component {
       current_role.reserved  = false
     }
     player.role = selected_role.name
-    this.channel.push("assign_role", "hihi")
+    this.channel.push("assign_role", {user_tag: this.user_tag, game_name: this.game_name, role: selected_role.name})
     this.setState({
       roles: [...this.state.roles],
       players: [...this.state.players]
@@ -180,7 +195,8 @@ class Game extends React.Component {
         </div>
         <div className="players">
           <h1>Players</h1>
-          <PlayerList players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} assignRole={this.assignRole} />
+          user_tags: {this.state.user_tag}
+          <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} assignRole={this.assignRole} />
         </div>
 
         <div className="assignRandomRole">
@@ -201,7 +217,7 @@ class PlayerList extends React.Component {
     return <ul className="player_list">
       {
         this.props.players.map((player, index) => (
-          <Player key={player.id} name={player.name} role={player.role} roles={this.props.roles} updateRoles={this.props.updateRoles} assignRole={this.props.assignRole} index={index}/>
+          <Player user_tag={this.props.user_tag} key={player.id} player_id={player.id} name={player.name} role={player.role} roles={this.props.roles} updateRoles={this.props.updateRoles} assignRole={this.props.assignRole} index={index}/>
         ))
       }
     </ul>
@@ -211,15 +227,15 @@ class PlayerList extends React.Component {
 class Player extends React.Component {
   render(){
     return (
-      <li className="player" key={this.props.id}>{this.props.name}
-        <select name="roles" value={this.props.role} onChange={(e) => {this.props.assignRole(e, this.props.index)}}>
+      <li className="player" key={this.props.id}>{this.props.name} 
+        <select disabled={this.props.player_id !== this.props.user_tag } name="roles" value={this.props.role} onChange={(e) => {this.props.assignRole(e, this.props.index)}}>
           {
             this.props.roles.map(role => (
               <option key={role.name} value={role.name} disabled={!(role.name === "Undecided") && role.reserved}>{role.name}</option>
             ))
           }
         </select>
-        Role: {this.props.role}
+        Role: {this.props.role} / player_id: {this.props.player_id} / user_tag: {this.props.user_tag}
       </li>)
   }
 }

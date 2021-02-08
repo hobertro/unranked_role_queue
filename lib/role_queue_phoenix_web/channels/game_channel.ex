@@ -21,20 +21,18 @@ defmodule RoleQueuePhoenixWeb.GameChannel do
   def handle_info({:after_join, game_name, player_id}, socket) do
     player_name = current_player(socket).name
     summary     = GameServer.add_player(game_name, player_id, player_name)
-
-    # push(socket, "game_summary", summary)
     broadcast!(socket, "game_summary", summary)
+
     {:noreply, socket}
   end
 
   def handle_in("assign_role", body, socket) do
-    player_name = current_player(socket).name
-    IO.inspect body
-    # summary     = GameServer.assign_role(game_name, player_id, player_name)
-    # broadcast!(socket, "new_chat_message", %{
-    #   name: current_player(socket).name,
-    #   body: body
-    # })
+    player_id   = body["user_tag"]
+    game_name   = body["game_name"]
+    role        = body["role"]
+    summary     = GameServer.assign_role(game_name, player_id, role)
+
+    broadcast!(socket, "assign_role", summary)
 
     {:noreply, socket}
   end

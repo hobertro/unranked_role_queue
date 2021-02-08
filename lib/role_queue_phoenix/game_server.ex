@@ -24,8 +24,8 @@ defmodule RoleQueuePhoenix.GameServer do
     GenServer.call(via_tuple(game_name), :summary)
   end
 
-  def assign_role(game_name, role, player) do
-    GenServer.call(via_tuple(game_name), {:assign_role, role, player})
+  def assign_role(game_name, player_id, role) do
+    GenServer.call(via_tuple(game_name), {:assign_role, player_id, role})
   end
 
   def add_player(game_name, player_id, player_name) do
@@ -77,12 +77,9 @@ defmodule RoleQueuePhoenix.GameServer do
     {:reply, game, game, @timeout}
   end
 
-  def handle_call({:assign_role, role, player_id, player_name}, _from, game) do
-    new_game = RoleQueuePhoenix.Game.assign_role(game, role, player_id, player_name)
-
-    # :ets.insert(:games_table, {my_game_name(), new_game})
-
-    {:reply, summarize(new_game), new_game, @timeout}
+  def handle_call({:assign_role, player_id, role}, _from, game) do
+    new_game = RoleQueuePhoenix.Game.assign_role(game, role, player_id)
+    {:reply, new_game, new_game, @timeout}
   end
 
   def summarize(game) do
