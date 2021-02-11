@@ -39,6 +39,7 @@ class Game extends React.Component {
       current_player: {role: "Undefined"}
     }
     
+    this.assignPlayerRole   = this.assignPlayerRole.bind(this);
     this.assignRole   = this.assignRole.bind(this);
     this.updateRoles  = this.updateRoles.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -120,6 +121,20 @@ class Game extends React.Component {
     });
   }
 
+  assignPlayerRole(role_name, current_player){
+    let player = current_player
+
+    let selected_role = this.findRole(role_name.target.value)[0]
+    let current_role  = this.findRole(current_player.role)[0]
+
+    selected_role.reserved = true
+    if (!(current_role === "Undecided")){
+      current_role.reserved  = false
+    }
+    player.role = selected_role.name
+    this.channel.push("assign_role", {user_tag: this.state.user_tag, game_name: this.state.game_name, role: selected_role.name})
+  }
+
   findRole(role_name){
     if (role_name === "Undecided"){
       return ["Undecided"]
@@ -196,7 +211,7 @@ class Game extends React.Component {
       <div className="main">
         <div className="roles">
           <h1>Select a Role:</h1>
-          <RoleSelector roles={this.state.roles}/>
+          <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignPlayerRole={this.assignPlayerRole}/>
           <button onClick={() => this.refreshRoles()} className="refreshRoles">
             Refresh Roles
           </button>
@@ -252,13 +267,13 @@ class Player extends React.Component {
 
 class RoleSelector extends React.Component {  
   render(){
-    return <RoleList roles={this.props.roles} />
+    return <RoleList roles={this.props.roles} currentPlayer={this.props.currentPlayer} assignPlayerRole={this.props.assignPlayerRole} />
   }
 }
 
 class RoleList extends React.Component { 
   renderRole(role) {
-    return <Role name={role.name} key={role.name}/>;
+    return <Role name={role.name} key={role.name} currentPlayer={this.props.currentPlayer} assignPlayerRole={this.props.assignPlayerRole} />;
   }
 
   render() {
@@ -276,7 +291,7 @@ class Role extends React.Component {
   render() {
     return (
       <li className="role_wrap">
-        <button className="role">
+        <button value={this.props.name} className="role" onClick={(e) => { this.props.assignPlayerRole(e, this.props.currentPlayer)} }>
           { this.props.name }
         </button>
       </li>
