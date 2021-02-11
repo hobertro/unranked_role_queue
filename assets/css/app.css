@@ -1,3 +1,7 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+.role_wrap {
+  list-style-type: none;
+}

@@ -35,7 +35,8 @@ class Game extends React.Component {
     this.state = {
       players: [],
       roles: role_list,
-      input: ""
+      input: "",
+      current_player: {role: "Undefined"}
     }
     
     this.assignRole   = this.assignRole.bind(this);
@@ -46,12 +47,16 @@ class Game extends React.Component {
 
   componentDidMount(){
     const { gameName, authToken, userTag } = document.getElementById('root').dataset
-    this.joinChannel(gameName, authToken, userTag)
-    this.game_name = gameName;
-    this.user_tag  = userTag;
     this.setState({
       game_name: gameName,
       user_tag: userTag
+    })
+    this.joinChannel(gameName, authToken, userTag)
+  }
+
+  findCurrentPlayer(players, userTag){
+    return players.filter((player) => {
+      return player.id === userTag;
     })
   }
 
@@ -60,19 +65,22 @@ class Game extends React.Component {
     socket.connect()
     this.channel = socket.channel(`games:${gameName}`, {userTag: userTag})
         
-    this.channel.on("game_summary", summary => { 
-      this.setState({
-        roles: [...summary["roles"]],
-        players: [...summary["players"]]
-      });
+    this.channel.on("game_summary", summary => {
         console.log('game summary', summary)
+
+        this.setState({
+          roles: [...summary["roles"]],
+          players: [...summary["players"]],
+          current_player: this.findCurrentPlayer(summary["players"], userTag)[0]
+        });
       }
     )
 
     this.channel.on("assign_role", summary => { 
       this.setState({
         roles: [...summary["roles"]],
-        players: [...summary["players"]]
+        players: [...summary["players"]],
+        current_player: this.findCurrentPlayer(summary["players"], userTag)[0]
       });
         console.log('assign role', summary)
       }
@@ -81,7 +89,7 @@ class Game extends React.Component {
 
     this.channel.join()
       .receive("ok", response => {
-        console.log(`Joined ${gameName} 😊`)  
+        console.log(`Joined ${gameName} 😊`)
       })
       .receive("error", response => {
         this.error = `Joining ${gameName} failed 🙁`
@@ -105,7 +113,7 @@ class Game extends React.Component {
       current_role.reserved  = false
     }
     player.role = selected_role.name
-    this.channel.push("assign_role", {user_tag: this.user_tag, game_name: this.game_name, role: selected_role.name})
+    this.channel.push("assign_role", {user_tag: this.state.user_tag, game_name: this.state.game_name, role: selected_role.name})
     this.setState({
       roles: [...this.state.roles],
       players: [...this.state.players]
@@ -187,15 +195,17 @@ class Game extends React.Component {
     return (
       <div className="main">
         <div className="roles">
-          <h1>Roles</h1>
-          <RoleList roles={this.state.roles}/>
+          <h1>Select a Role:</h1>
+          <RoleSelector roles={this.state.roles}/>
           <button onClick={() => this.refreshRoles()} className="refreshRoles">
             Refresh Roles
           </button>
         </div>
+        <div className="current_player">
+          <h1>Your current role is: {this.state.current_player.role}</h1>
+        </div>
         <div className="players">
           <h1>Players</h1>
-          user_tags: {this.state.user_tag}
           <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} assignRole={this.assignRole} />
         </div>
 
@@ -235,20 +245,14 @@ class Player extends React.Component {
             ))
           }
         </select>
-        Role: {this.props.role} / player_id: {this.props.player_id} / user_tag: {this.props.user_tag}
+        Role: {this.props.role}
       </li>)
   }
 }
 
 class RoleSelector extends React.Component {  
   render(){
-    return <select name="roles" selected={this.props.role} onChange={this.props.assignRole}>
-      {
-        this.props.roles.map(role => (
-          <option value={role} key={role}>{role}</option>
-        ))
-      }
-    </select>
+    return <RoleList roles={this.props.roles} />
   }
 }
 
@@ -271,8 +275,10 @@ class RoleList extends React.Component {
 class Role extends React.Component {
   render() {
     return (
-      <li className="role">
-        { this.props.name }
+      <li className="role_wrap">
+        <button className="role">
+          { this.props.name }
+        </button>
       </li>
     )
   }
