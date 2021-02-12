@@ -183,8 +183,8 @@ class Game extends React.Component {
         <div className="roles">
           <h1>Select a Role:</h1>
           <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignRole={this.assignRole}/>
-          <button onClick={() => this.refreshRoles()} className="refreshRoles">
-            Refresh Roles
+          <button  type="button" onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="btn btn-primary assignRolesButton">
+              Random Role
           </button>
         </div>
         <div className="current_player">
@@ -193,15 +193,6 @@ class Game extends React.Component {
         <div className="players">
           <h1>Players</h1>
           <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} />
-        </div>
-
-        <div className="assignRandomRole">
-          <h1>Random Role</h1>
-          <div className="assignRoles">
-            <button onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="assignRolesButton">
-              Assign Role
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -255,7 +246,7 @@ class Role extends React.Component {
   render() {
     return (
       <li className="role_wrap">
-        <button value={this.props.name} className="role" onClick={(e) => { this.props.assignRole(e.target.value, this.props.currentPlayer)} }>
+        <button value={this.props.name} className="role btn btn-primary" onClick={(e) => { this.props.assignRole(e.target.value, this.props.currentPlayer)} }>
           { this.props.name }
         </button>
       </li>
