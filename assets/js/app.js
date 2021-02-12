@@ -39,7 +39,6 @@ class Game extends React.Component {
       current_player: {role: "Undefined"}
     }
     
-    this.assignPlayerRole   = this.assignPlayerRole.bind(this);
     this.assignRole   = this.assignRole.bind(this);
     this.updateRoles  = this.updateRoles.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -104,27 +103,10 @@ class Game extends React.Component {
     })
   }
 
-  assignRole(role_name, index){
-    let player = this.state.players[index]
-    let selected_role = this.findRole(role_name.target.value)[0]
-    let current_role  = this.findRole(player.role)[0]
-
-    selected_role.reserved = true
-    if (!(current_role === "Undecided")){
-      current_role.reserved  = false
-    }
-    player.role = selected_role.name
-    this.channel.push("assign_role", {user_tag: this.state.user_tag, game_name: this.state.game_name, role: selected_role.name})
-    this.setState({
-      roles: [...this.state.roles],
-      players: [...this.state.players]
-    });
-  }
-
-  assignPlayerRole(role_name, current_player){
+  assignRole(role_name, current_player){
     let player = current_player
 
-    let selected_role = this.findRole(role_name.target.value)[0]
+    let selected_role = this.findRole(role_name)[0]
     let current_role  = this.findRole(current_player.role)[0]
 
     selected_role.reserved = true
@@ -157,22 +139,11 @@ class Game extends React.Component {
     })
   }
 
-  assignRandomRoles(){
-    let players = this.state.players
-    let roles   = this.state.roles
-    players.forEach(function(player){
-      let index = Math.floor(Math.random() * (roles.length));
-      let role  = roles[index];
-      if (role.reserved === true){
-        return;
-      }
-      player.role = role.name;
-      role.reserved = true
-    })
-    this.setState({
-      players: [...players],
-      roles: [...roles]
-    })
+  assignRandomRoles(current_player, roles){
+    let index = Math.floor(Math.random() * (roles.length));
+    let role  = roles[index];
+
+    this.assignRole(role.name, current_player);
   }
   
   randomNumber(arr){
@@ -211,7 +182,7 @@ class Game extends React.Component {
       <div className="main">
         <div className="roles">
           <h1>Select a Role:</h1>
-          <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignPlayerRole={this.assignPlayerRole}/>
+          <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignRole={this.assignRole}/>
           <button onClick={() => this.refreshRoles()} className="refreshRoles">
             Refresh Roles
           </button>
@@ -221,14 +192,14 @@ class Game extends React.Component {
         </div>
         <div className="players">
           <h1>Players</h1>
-          <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} assignRole={this.assignRole} />
+          <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} />
         </div>
 
         <div className="assignRandomRole">
-          <h1>Assign Random roles</h1>
+          <h1>Random Role</h1>
           <div className="assignRoles">
-            <button onClick={() => this.assignRandomRoles()} className="assignRolesButton">
-              Assign Roles
+            <button onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="assignRolesButton">
+              Assign Role
             </button>
           </div>
         </div>
@@ -242,7 +213,7 @@ class PlayerList extends React.Component {
     return <ul className="player_list">
       {
         this.props.players.map((player, index) => (
-          <Player user_tag={this.props.user_tag} key={player.id} player_id={player.id} name={player.name} role={player.role} roles={this.props.roles} updateRoles={this.props.updateRoles} assignRole={this.props.assignRole} index={index}/>
+          <Player user_tag={this.props.user_tag} key={player.id} player_id={player.id} name={player.name} role={player.role} roles={this.props.roles} updateRoles={this.props.updateRoles} index={index}/>
         ))
       }
     </ul>
@@ -252,28 +223,21 @@ class PlayerList extends React.Component {
 class Player extends React.Component {
   render(){
     return (
-      <li className="player" key={this.props.id}>{this.props.name} 
-        <select disabled={this.props.player_id !== this.props.user_tag } name="roles" value={this.props.role} onChange={(e) => {this.props.assignRole(e, this.props.index)}}>
-          {
-            this.props.roles.map(role => (
-              <option key={role.name} value={role.name} disabled={!(role.name === "Undecided") && role.reserved}>{role.name}</option>
-            ))
-          }
-        </select>
-        Role: {this.props.role}
+      <li className="player" key={this.props.id}>
+        {this.props.name} has selected role: {this.props.role}
       </li>)
   }
 }
 
 class RoleSelector extends React.Component {  
   render(){
-    return <RoleList roles={this.props.roles} currentPlayer={this.props.currentPlayer} assignPlayerRole={this.props.assignPlayerRole} />
+    return <RoleList roles={this.props.roles} currentPlayer={this.props.currentPlayer} assignRole={this.props.assignRole} />
   }
 }
 
 class RoleList extends React.Component { 
   renderRole(role) {
-    return <Role name={role.name} key={role.name} currentPlayer={this.props.currentPlayer} assignPlayerRole={this.props.assignPlayerRole} />;
+    return <Role name={role.name} key={role.name} currentPlayer={this.props.currentPlayer} assignRole={this.props.assignRole} />;
   }
 
   render() {
@@ -291,7 +255,7 @@ class Role extends React.Component {
   render() {
     return (
       <li className="role_wrap">
-        <button value={this.props.name} className="role" onClick={(e) => { this.props.assignPlayerRole(e, this.props.currentPlayer)} }>
+        <button value={this.props.name} className="role" onClick={(e) => { this.props.assignRole(e.target.value, this.props.currentPlayer)} }>
           { this.props.name }
         </button>
       </li>
