@@ -179,20 +179,24 @@ class Game extends React.Component {
 
   render() {
     return (
-      <div className="main">
-        <div className="roles">
-          <h1>Select a Role:</h1>
-          <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignRole={this.assignRole}/>
-          <button  type="button" onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="btn btn-primary assignRolesButton">
-              Random Role
-          </button>
-        </div>
-        <div className="current_player">
-          <h1>Your current role is: {this.state.current_player.role}</h1>
-        </div>
-        <div className="players">
-          <h1>Players</h1>
-          <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} />
+      <div className="container">
+        <div className="row">
+          <div className="roles col-6">
+            <h1>Select a Role:</h1>
+            <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignRole={this.assignRole}/>
+            <button  type="button" onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="btn btn-primary assignRolesButton">
+                Random Role
+            </button>
+          </div>
+          <div className="col-6">
+            <div className="current_player">
+              <h1>Your current role is: {this.state.current_player.role}</h1>
+            </div>
+            <div className="players">
+              <h1>Players</h1>
+              <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} />
+            </div>
+          </div>
         </div>
       </div>
     );

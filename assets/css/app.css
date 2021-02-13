@@ -2,6 +2,13 @@
 
 /* @import "./phoenix.css"; */
 
-.role_wrap {
+.players {
+  border: 1px solid black;
+}
+.role_wrap, .player {
   list-style-type: none;
+}
+
+.role_wrap {
+  margin: 5px;
 }
