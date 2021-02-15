@@ -1,16 +1,18 @@
 defmodule RoleQueuePhoenix.Game do
-  @derive {Jason.Encoder, only: [:name, :players, :roles]}
-  defstruct name: nil, players: [], roles: []
+  @derive {Jason.Encoder, only: [:name, :players, :roles, :heroes]}
+  defstruct name: nil, players: [], roles: [], heroes: []
 
   alias RoleQueuePhoenix.Game
   alias RoleQueuePhoenix.Player
+  alias RoleQueuePhoenix.Hero
 
   @doc """
   Creates a game with a players and roles setup.
   """
   def new(name) do
-    roles = setup_roles()
-    %Game{name: name, players: [], roles: roles}
+    roles  = setup_roles()
+    heroes = setup_heroes()
+    %Game{name: name, players: [], roles: roles, heroes: heroes}
   end
 
   def assign_role(game, role, player_id) do
@@ -65,5 +67,11 @@ defmodule RoleQueuePhoenix.Game do
         reserved: false
       }
     end)
+  end
+
+  def setup_heroes do
+    {:ok, response} = :sys.get_state(:hero_cache_server)
+    IO.inspect response
+    Enum.map(response, fn({k,v}) -> Hero.new(k,v) end)
   end
 end

@@ -13,6 +13,7 @@ defmodule RoleQueuePhoenix.Application do
       # Start the Ecto repository
       # RoleQueuePhoenix.Repo,
       # Start the endpoint when the application starts
+      HeroCacheServer,
       RoleQueuePhoenixWeb.Endpoint,
       RoleQueuePhoenix.GameSupervisor,
       supervisor(RoleQueuePhoenixWeb.Presence, [])

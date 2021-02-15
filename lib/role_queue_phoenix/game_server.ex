@@ -52,15 +52,6 @@ defmodule RoleQueuePhoenix.GameServer do
   # # Server Callbacks
 
   def init({game_name}) do
-    # case :ets.lookup(:games_table, game_name) do
-    #   [] ->
-    #     game = RoleQueuePhoenix.Game.new(game_name)
-    #     :ets.insert(:games_table, {game_name, game})
-    #     game
-
-    #   [{^game_name, game}] ->
-    #     game
-    # end
     game = RoleQueuePhoenix.Game.new(game_name)
 
     Logger.info("Spawned game server process named '#{game_name}'.")
