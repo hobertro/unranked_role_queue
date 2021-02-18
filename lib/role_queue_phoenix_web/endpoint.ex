@@ -11,7 +11,7 @@ defmodule RoleQueuePhoenixWeb.Endpoint do
   ]
 
   socket "/socket", RoleQueuePhoenixWeb.UserSocket,
-    websocket: true,
+    websocket: [timeout: 45_000],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
