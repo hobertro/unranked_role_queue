@@ -1,8 +1,8 @@
 defmodule RoleQueuePhoenix.Player do
 
-  @derive {Jason.Encoder, only: [:name, :role, :id]}
+  @derive {Jason.Encoder, only: [:name, :role, :id, :hero]}
   @enforce_keys [:name]
-  defstruct [:name, role: "Undecided", id: nil]
+  defstruct [:name, role: "Undecided", id: nil, hero: "Undecided"]
 
   @doc """
   Creates a player with the given `name`.

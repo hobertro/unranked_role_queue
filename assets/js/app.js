@@ -36,10 +36,12 @@ class Game extends React.Component {
       players: [],
       roles: role_list,
       input: "",
-      current_player: {role: "Undefined"}
+      current_player: {role: "Undefined"},
+      heroes: []
     }
     
     this.assignRole   = this.assignRole.bind(this);
+    this.assignHero   = this.assignHero.bind(this);
     this.updateRoles  = this.updateRoles.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -69,6 +71,7 @@ class Game extends React.Component {
         console.log('game summary', summary)
 
         this.setState({
+          heroes: [...summary["heroes"]],
           roles: [...summary["roles"]],
           players: [...summary["players"]],
           current_player: this.findCurrentPlayer(summary["players"], userTag)[0]
@@ -77,6 +80,16 @@ class Game extends React.Component {
     )
 
     this.channel.on("assign_role", summary => { 
+      this.setState({
+        roles: [...summary["roles"]],
+        players: [...summary["players"]],
+        current_player: this.findCurrentPlayer(summary["players"], userTag)[0]
+      });
+        console.log('assign role', summary)
+      }
+    )
+
+    this.channel.on("assign_hero", summary => { 
       this.setState({
         roles: [...summary["roles"]],
         players: [...summary["players"]],
@@ -101,6 +114,22 @@ class Game extends React.Component {
     this.setState({
       roles: roles
     })
+  }
+
+  assignHero(hero_name, current_player){
+console.log(hero_name, "hero_name");
+console.log(current_player, "current_player");
+    // let player = current_player
+
+    // let selected_role = this.findHero(role_name)[0]
+    // let current_role  = this.findHero(current_player.hero)[0]
+
+    // selected_role.reserved = true
+    // if (!(current_role === "Undecided")){
+    //   current_role.reserved  = false
+    // }
+    // current_player.hero = hero_name
+    this.channel.push("assign_hero", {user_tag: this.state.user_tag, game_name: this.state.game_name, hero: hero_name})
   }
 
   assignRole(role_name, current_player){
@@ -198,6 +227,10 @@ class Game extends React.Component {
             </div>
           </div>
         </div>
+        <div>
+          Select a hero:
+          <HeroSelector heroes={this.state.heroes} currentPlayer={this.state.current_player} assignHero={this.assignHero}/>
+        </div>
       </div>
     );
   }
@@ -208,7 +241,7 @@ class PlayerList extends React.Component {
     return <ul className="player_list">
       {
         this.props.players.map((player, index) => (
-          <Player user_tag={this.props.user_tag} key={player.id} player_id={player.id} name={player.name} role={player.role} roles={this.props.roles} updateRoles={this.props.updateRoles} index={index}/>
+          <Player user_tag={this.props.user_tag} key={player.id} player_id={player.id} name={player.name} role={player.role} hero={player.hero} roles={this.props.roles} updateRoles={this.props.updateRoles} index={index}/>
         ))
       }
     </ul>
@@ -219,7 +252,7 @@ class Player extends React.Component {
   render(){
     return (
       <li className="player" key={this.props.id}>
-        {this.props.name} has selected role: {this.props.role}
+        {this.props.name} has selected role: {this.props.role} and {this.props.hero}
       </li>)
   }
 }
@@ -227,6 +260,40 @@ class Player extends React.Component {
 class RoleSelector extends React.Component {  
   render(){
     return <RoleList roles={this.props.roles} currentPlayer={this.props.currentPlayer} assignRole={this.props.assignRole} />
+  }
+}
+
+class HeroSelector extends React.Component {
+  render(){
+    return <HeroList heroes={this.props.heroes} currentPlayer={this.props.currentPlayer} assignHero={this.props.assignHero} />
+  }
+}
+
+class HeroList extends React.Component {
+  renderHero(hero) {
+    return <Hero url={hero.image_url} name={hero.hero_roles.name} key={hero.name} currentPlayer={this.props.currentPlayer} assignHero={this.props.assignHero} />;
+  }
+
+  render() {
+    return (
+      <ul className="hero_list">
+        {
+          this.props.heroes.map(hero => this.renderHero(hero))
+        }
+      </ul>
+    )
+  }
+}
+
+class Hero extends React.Component {
+  render() {
+    return (
+      <li className="hero_wrap">
+        <a href="#" onClick={(e) => { this.props.assignHero(this.props.name, this.props.currentPlayer)}}>
+          <img src={this.props.url} />{this.props.name}
+        </a>
+      </li>
+    )
   }
 }
 

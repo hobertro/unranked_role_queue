@@ -35,6 +35,29 @@ defmodule RoleQueuePhoenix.Game do
     end
   end
 
+  def assign_hero(game, hero, player_id) do
+    # assign player the hero
+    # set the hero as assigned
+
+    case find_player(game.players, player_id) do
+      nil ->
+        game
+      player ->
+        new_players = game.players |> Enum.map(&assign_hero_to_player(&1, hero, player_id))
+        %Game{game | players: new_players}
+    end
+  end
+
+  @spec assign_hero_to_player(atom | %{:id => any, optional(any) => any}, any, any) ::
+          atom | %{:id => any, optional(any) => any}
+  def assign_hero_to_player(player, hero, player_id) do
+    case player.id == player_id do
+      true -> %Player{player | hero: hero}
+      false -> player
+    end
+  end
+
+
   def add_player(%Game{} = game, id, name) do
     case find_player(game.players, id) do
       nil ->

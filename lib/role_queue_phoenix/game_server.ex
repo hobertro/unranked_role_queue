@@ -28,6 +28,11 @@ defmodule RoleQueuePhoenix.GameServer do
     GenServer.call(via_tuple(game_name), {:assign_role, player_id, role})
   end
 
+
+  def assign_hero(game_name, player_id, hero_name) do
+    GenServer.call(via_tuple(game_name), {:assign_hero, player_id, hero_name})
+  end
+
   def add_player(game_name, player_id, player_name) do
     GenServer.call(via_tuple(game_name), {:add_player, player_id, player_name})
   end
@@ -70,6 +75,11 @@ defmodule RoleQueuePhoenix.GameServer do
 
   def handle_call({:assign_role, player_id, role}, _from, game) do
     new_game = RoleQueuePhoenix.Game.assign_role(game, role, player_id)
+    {:reply, new_game, new_game, @timeout}
+  end
+
+  def handle_call({:assign_hero, player_id, hero_name}, _from, game) do
+    new_game = RoleQueuePhoenix.Game.assign_hero(game, hero_name, player_id)
     {:reply, new_game, new_game, @timeout}
   end
 

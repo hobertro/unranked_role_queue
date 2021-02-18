@@ -37,6 +37,17 @@ defmodule RoleQueuePhoenixWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("assign_hero", body, socket) do
+    player_id   = body["user_tag"]
+    game_name   = body["game_name"]
+    hero        = body["hero"]
+    summary     = GameServer.assign_hero(game_name, player_id, hero)
+
+    broadcast!(socket, "assign_hero", summary)
+
+    {:noreply, socket}
+  end
+
   defp current_player(socket) do
     socket.assigns.current_player
   end
