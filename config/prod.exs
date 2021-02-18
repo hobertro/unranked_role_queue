@@ -12,7 +12,7 @@ use Mix.Config
 config :role_queue_phoenix, RoleQueuePhoenixWeb.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [scheme: "https", host: "unranked-role-queue.herokuapp.com", port: 443],
-  force_ssl: [rewrite_on: [:x_forwarded_proto],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
