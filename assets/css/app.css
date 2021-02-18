@@ -2,13 +2,22 @@
 
 /* @import "./phoenix.css"; */
 
-.players {
-  border: 1px solid black;
+.players h1 {
+  text-align: center;
 }
-.role_wrap, .player {
+.role_wrap, .player, .hero_wrap {
   list-style-type: none;
 }
 
 .role_wrap {
   margin: 5px;
+}
+
+.role {
+  margin: 0 5px;
+}
+
+.game {
+  margin-top: 100px;
+  max-width: 700px !important;
 }

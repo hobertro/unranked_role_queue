@@ -117,18 +117,6 @@ class Game extends React.Component {
   }
 
   assignHero(hero_name, current_player){
-console.log(hero_name, "hero_name");
-console.log(current_player, "current_player");
-    // let player = current_player
-
-    // let selected_role = this.findHero(role_name)[0]
-    // let current_role  = this.findHero(current_player.hero)[0]
-
-    // selected_role.reserved = true
-    // if (!(current_role === "Undecided")){
-    //   current_role.reserved  = false
-    // }
-    // current_player.hero = hero_name
     this.channel.push("assign_hero", {user_tag: this.state.user_tag, game_name: this.state.game_name, hero: hero_name})
   }
 
@@ -208,28 +196,22 @@ console.log(current_player, "current_player");
 
   render() {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="roles col-6">
-            <h1>Select a Role:</h1>
-            <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignRole={this.assignRole}/>
-            <button  type="button" onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="btn btn-primary assignRolesButton">
-                Random Role
-            </button>
-          </div>
-          <div className="col-6">
-            <div className="current_player">
-              <h1>Your current role is: {this.state.current_player.role}</h1>
-            </div>
-            <div className="players">
-              <h1>Players</h1>
-              <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} />
-            </div>
-          </div>
-        </div>
+      <div className="container game text-center">
+        <h2>Unranked Role Queue</h2>
         <div>
-          Select a hero:
           <HeroSelector heroes={this.state.heroes} currentPlayer={this.state.current_player} assignHero={this.assignHero}/>
+        </div>
+        {/* <div className="current_player">
+          <h1>Your current role is: {this.state.current_player.role}</h1>
+        </div> */}
+        {/* <h1>Select a Role:</h1> */}
+        <RoleSelector currentPlayer={this.state.current_player} roles={this.state.roles} assignRole={this.assignRole}/>
+        {/* <button  type="button" onClick={() => this.assignRandomRoles(this.state.current_player, this.state.roles)} className="btn btn-primary assignRolesButton">
+            Random Role
+        </button> */}
+
+        <div className="players">
+          <PlayerList user_tag={this.state.user_tag} players={this.state.players} roles={this.state.roles} updateRoles={this.updateRoles} />
         </div>
       </div>
     );
@@ -238,22 +220,33 @@ console.log(current_player, "current_player");
 
 class PlayerList extends React.Component {
   render(){
-    return <ul className="player_list">
+    return <table className="table table-hover player_list">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Role</th>
+          <th>Hero</th>
+        </tr>
+      </thead>
+      <tbody>
       {
         this.props.players.map((player, index) => (
           <Player user_tag={this.props.user_tag} key={player.id} player_id={player.id} name={player.name} role={player.role} hero={player.hero} roles={this.props.roles} updateRoles={this.props.updateRoles} index={index}/>
         ))
       }
-    </ul>
+      </tbody>
+    </table>
   }
 }
 
 class Player extends React.Component {
   render(){
     return (
-      <li className="player" key={this.props.id}>
-        {this.props.name} has selected role: {this.props.role} and {this.props.hero}
-      </li>)
+      <tr className="player" key={this.props.id}>
+        <td>{this.props.name}</td>
+        <td>{this.props.role}</td>
+        <td>{this.props.hero}</td>
+      </tr>)
   }
 }
 
@@ -288,11 +281,9 @@ class HeroList extends React.Component {
 class Hero extends React.Component {
   render() {
     return (
-      <li className="hero_wrap">
-        <a href="#" onClick={(e) => { this.props.assignHero(this.props.name, this.props.currentPlayer)}}>
-          <img src={this.props.url} />{this.props.name}
-        </a>
-      </li>
+      <a href="#" onClick={(e) => { this.props.assignHero(this.props.name, this.props.currentPlayer)}}>
+        <img src={this.props.url} />
+      </a>
     )
   }
 }
@@ -316,11 +307,9 @@ class RoleList extends React.Component {
 class Role extends React.Component {
   render() {
     return (
-      <li className="role_wrap">
-        <button value={this.props.name} className="role btn btn-primary" onClick={(e) => { this.props.assignRole(e.target.value, this.props.currentPlayer)} }>
-          { this.props.name }
-        </button>
-      </li>
+      <button value={this.props.name} className="role btn btn-primary" onClick={(e) => { this.props.assignRole(e.target.value, this.props.currentPlayer)} }>
+        { this.props.name }
+      </button>
     )
   }
 }
